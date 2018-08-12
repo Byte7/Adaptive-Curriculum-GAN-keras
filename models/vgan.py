@@ -112,11 +112,22 @@ class VGAN():
             if epoch % sample_size == 0:
                 self.sample_images(epoch)
 
+    def sample_image(self, epoch):
+        ri, ci = 5, 5
+        noise = np.random.normal(0, 1, (ri*ci, self.dimen))
+        g_imgs = self.generator.predict(noise)
 
+        g_imgs = 0.5*g_imgs +0.5
+        fig, axs = plt.subplots(ri, ci)
+        cnt = 0
+        for i in range(ri):
+            for j in range(ci):
+                axs[i, j].imshow(g_imgs[cnt, :, :, 0], cmap='gray')
+                axs[i, j].axis('off')
+                cnt += 1
+        fig.savefig("images/%d.png" % epoch)
 
-
-
-
+        plt.close()
 
 
 if __name__ == "__main__":
