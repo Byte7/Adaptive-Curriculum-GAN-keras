@@ -22,8 +22,11 @@ class VGAN():
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
         self.dimen=100
 
+
+        self.optimizer = Adam(0.0002, 0.5)
+
         self.discriminator = self.build_discriminator()
-        self.discriminator.compile(loss='binary_crossentropy', optimizer='', metrics=['accuracy'])
+        self.discriminator.compile(loss='binary_crossentropy', optimizer='optimizer', metrics=['accuracy'])
 
         self.generator = self.build_generator()
 
@@ -69,6 +72,21 @@ class VGAN():
         return Model(img, valid)
 
     def train(self, epochs, batch_size=64, sample_size=50):
+
+        #load mnist data
+        (X_train, _), (_, _) = mnist.load_data()
+
+        #Rescale -1 to 1
+        X_train = X_train/127.5 - 1
+        X_train = np.expand_dims(X_train, axis=3)
+
+        #adversial ground truth
+        valid = np.ones(batch_size, 1)
+        fake = np.zeros(batch_size, 1)
+
+
+
+
 
 
 
