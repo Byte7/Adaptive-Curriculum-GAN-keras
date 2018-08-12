@@ -73,16 +73,44 @@ class VGAN():
 
     def train(self, epochs, batch_size=64, sample_size=50):
 
-        #load mnist data
+        # load mnist data
         (X_train, _), (_, _) = mnist.load_data()
 
-        #Rescale -1 to 1
+        # Rescale -1 to 1
         X_train = X_train/127.5 - 1
         X_train = np.expand_dims(X_train, axis=3)
 
-        #adversial ground truth
+        # adversial ground truth
         valid = np.ones(batch_size, 1)
         fake = np.zeros(batch_size, 1)
+        for epoch in range(epochs):
+
+            # Training discriminator
+            ids = np.random.randint(0, X_train.shape[0], batch_size)
+            imgs = X_train[ids]
+
+            noise = np.random.normal(0, 1, (batch_size, self.dimen))
+
+            # Generate new images
+            generate_img = self.generator.predict(noise)
+
+            # train
+            dis_loss_real = self.discriminator.train_on_batch(imgs, valid)
+            dis_loss_fake = self.discriminator.train_on_batch(generate_img, fake)
+
+            dis_loss = np.add(dis_loss_real, dis_loss_fake)
+
+
+            # Training generator
+            noise = np.random.normal(0, 1, (batch_size, self.dimen))
+
+            # train generator
+            gen_loss = self.generator.train_on_batch(noise, valid)
+
+            print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, dis_loss[0], 100*dis_loss[1], gen_loss))
+
+            if epoch % sample_size == 0:
+                self.sample_images(epoch)
 
 
 
