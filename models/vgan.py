@@ -4,11 +4,11 @@ from keras.datasets import mnist, cifar10
 from keras.layers import Input, Dense, Reshape, Flatten, Dropout
 from keras.layers import BatchNormalization, Activation, ZeroPadding2D
 from keras.layers.advanced_activations import LeakyReLU
-from keras.layers.convolutional import UpSampling2D, Conv2D
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
 
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import sys
 import numpy as np
 
@@ -116,12 +116,12 @@ class VGAN():
             noise = np.random.normal(0, 1, (batch_size, self.dimen))
 
             # train generator
-            gen_loss = self.generator.train_on_batch(noise, valid)
+            gen_loss = self.combined.train_on_batch(noise, valid)
 
             print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, dis_loss[0], 100 * dis_loss[1], gen_loss))
 
             if epoch % sample_size == 0:
-                self.sample_images(epoch)
+                self.sample_image(epoch)
 
     def sample_image(self, epoch):
         ri, ci = 5, 5
@@ -143,4 +143,4 @@ class VGAN():
 
 if __name__ == "__main__":
     vgan = VGAN()
-    vgan.train(epochs=10000, batch_size=32, sample_size=200)
+    vgan.train(epochs=50000, batch_size=32, sample_size=200)
