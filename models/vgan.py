@@ -26,7 +26,7 @@ class VGAN():
         optimizer = Adam(0.0002, 0.5)
 
         self.discriminator = self.build_discriminator()
-        self.discriminator.compile(loss='binary_crossentropy', optimizer='optimizer', metrics=['accuracy'])
+        self.discriminator.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
         self.generator = self.build_generator()
 		
@@ -85,7 +85,7 @@ class VGAN():
 
         return Model(img, valid)
 
-    def train(self, epochs, batch_size=64, sample_size=50):
+    def train(self, epochs, batch_size=128, sample_size=50):
 
         # load mnist data
         (X_train, _), (_, _) = mnist.load_data()
@@ -146,4 +146,4 @@ class VGAN():
 
 if __name__ == "__main__":
     vgan = VGAN()
-    vgan.train(epochs=500, batch_size=64,sample_size=50)
+    vgan.train(epochs=10000, batch_size=32,sample_size=200)
