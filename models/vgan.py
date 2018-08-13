@@ -29,7 +29,21 @@ class VGAN():
         self.discriminator.compile(loss='binary_crossentropy', optimizer='optimizer', metrics=['accuracy'])
 
         self.generator = self.build_generator()
+		
+		# The generator takes noise as input and generates imgs
+        noi = Input(shape=(self.latent_dim,))
+        img = self.generator(noi)
 
+        # For the combined model we will only train the generator
+        self.discriminator.trainable = False
+
+        # The discriminator takes generated images as input and determines validity
+        validity = self.discriminator(img)
+
+        # The combined model  (stacked generator and discriminator)
+        # Trains the generator to fool the discriminator
+        self.combined = Model(noi, validity)
+        self.combined.compile(loss='binary_crossentropy', optimizer=optimizer)
 
 
     def build_generator(self):
