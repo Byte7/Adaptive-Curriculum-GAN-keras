@@ -23,7 +23,7 @@ class VGAN():
         self.dimen=100
 
 
-        self.optimizer = Adam(0.0002, 0.5)
+        optimizer = Adam(0.0002, 0.5)
 
         self.discriminator = self.build_discriminator()
         self.discriminator.compile(loss='binary_crossentropy', optimizer='optimizer', metrics=['accuracy'])
