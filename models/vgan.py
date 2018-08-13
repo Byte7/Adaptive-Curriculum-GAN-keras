@@ -20,8 +20,7 @@ class VGAN():
         self.img_cols = 28
         self.channels = 1
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
-        self.dimen=100
-
+        self.dimen = 100
 
         optimizer = Adam(0.0002, 0.5)
 
@@ -29,8 +28,8 @@ class VGAN():
         self.discriminator.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
         self.generator = self.build_generator()
-		
-		# The generator takes noise as input and generates imgs
+
+        # The generator takes noise as input and generates imgs
         noi = Input(shape=(self.dimen,))
         img = self.generator(noi)
 
@@ -44,7 +43,6 @@ class VGAN():
         # Trains the generator to fool the discriminator
         self.combined = Model(noi, validity)
         self.combined.compile(loss='binary_crossentropy', optimizer=optimizer)
-
 
     def build_generator(self):
 
@@ -66,7 +64,6 @@ class VGAN():
         noise = Input(shape=(self.dimen,))
         img = model(noise)
         return Model(noise, img)
-
 
     def build_discriminator(self):
 
@@ -91,7 +88,7 @@ class VGAN():
         (X_train, _), (_, _) = mnist.load_data()
 
         # Rescale -1 to 1
-        X_train = X_train/127.5 - 1
+        X_train = X_train / 127.5 - 1.
         X_train = np.expand_dims(X_train, axis=3)
 
         # adversial ground truth
@@ -114,24 +111,23 @@ class VGAN():
 
             dis_loss = np.add(dis_loss_real, dis_loss_fake)
 
-
             # Training generator
             noise = np.random.normal(0, 1, (batch_size, self.dimen))
 
             # train generator
             gen_loss = self.generator.train_on_batch(noise, valid)
 
-            print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, dis_loss[0], 100*dis_loss[1], gen_loss))
+            print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, dis_loss[0], 100 * dis_loss[1], gen_loss))
 
             if epoch % sample_size == 0:
                 self.sample_images(epoch)
 
     def sample_image(self, epoch):
         ri, ci = 5, 5
-        noise = np.random.normal(0, 1, (ri*ci, self.dimen))
+        noise = np.random.normal(0, 1, (ri * ci, self.dimen))
         g_imgs = self.generator.predict(noise)
 
-        g_imgs = 0.5*g_imgs +0.5
+        g_imgs = 0.5 * g_imgs + 0.5
         fig, axs = plt.subplots(ri, ci)
         cnt = 0
         for i in range(ri):
@@ -146,4 +142,4 @@ class VGAN():
 
 if __name__ == "__main__":
     vgan = VGAN()
-    vgan.train(epochs=10000, batch_size=32,sample_size=200)
+    vgan.train(epochs=10000, batch_size=32, sample_size=200)
