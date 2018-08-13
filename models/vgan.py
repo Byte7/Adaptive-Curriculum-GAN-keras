@@ -95,8 +95,8 @@ class VGAN():
         X_train = np.expand_dims(X_train, axis=3)
 
         # adversial ground truth
-        valid = np.ones(batch_size, 1)
-        fake = np.zeros(batch_size, 1)
+        valid = np.ones((batch_size, 1))
+        fake = np.zeros((batch_size, 1))
         for epoch in range(epochs):
 
             # Training discriminator
