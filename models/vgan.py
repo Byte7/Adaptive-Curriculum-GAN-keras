@@ -31,7 +31,7 @@ class VGAN():
         self.generator = self.build_generator()
 		
 		# The generator takes noise as input and generates imgs
-        noi = Input(shape=(self.latent_dim,))
+        noi = Input(shape=(self.dimen,))
         img = self.generator(noi)
 
         # For the combined model we will only train the generator
