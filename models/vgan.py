@@ -28,6 +28,7 @@ class VGAN():
         self.discriminator.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
         self.generator = self.build_generator()
+        self.generator.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
         # The generator takes noise as input and generates imgs
         noi = Input(shape=(self.dimen,))
