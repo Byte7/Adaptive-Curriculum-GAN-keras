@@ -4,6 +4,7 @@ from keras.datasets import mnist, cifar10
 from keras.layers import Input, Dense, Reshape, Flatten, Dropout
 from keras.layers import BatchNormalization, Activation, ZeroPadding2D
 from keras.layers.advanced_activations import LeakyReLU
+from keras.layers.convolutional import UpSampling2D, Conv2D
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
 
@@ -13,7 +14,7 @@ import sys
 import numpy as np
 
 
-class VGAN():
+class DCGAN():
 
     def __init__(self):
         self.img_rows = 28
@@ -48,17 +49,18 @@ class VGAN():
     def build_generator(self):
 
         model = Sequential()
-        model.add(Dense(256, input_dim=self.dimen))
-        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dense(128*7*7, activation='relu', input_dim=self.dimen))
+        model.add(Reshape((7, 7, 128)))
+        model.add(UpSampling2D())
+        model.add(Conv2D(128, kernel_size=3, padding='same'))
         model.add(BatchNormalization(momentum=0.8))
-        model.add(Dense(512))
-        model.add(LeakyReLU(alpha=0.2))
+        model.add(Activation('relu'))
+        model.add(UpSampling2D())
+        model.add(Conv2D(64, kernel_size=3, padding='same'))
         model.add(BatchNormalization(momentum=0.8))
-        model.add(Dense(1024))
-        model.add(LeakyReLU(alpha=0.2))
-        model.add(BatchNormalization(momentum=0.8))
-        model.add(Dense(np.prod(self.img_shape), activation='tanh'))
-        model.add(Reshape(self.img_shape))
+        model.add(Activation('relu'))
+        model.add(Conv2D(self.channels, kernel_size=3, padding='same'))
+        model.add((Activation('tanh')))
 
         model.summary()
 
@@ -69,11 +71,23 @@ class VGAN():
     def build_discriminator(self):
 
         model = Sequential()
-        model.add(Flatten(input_shape=self.img_shape))
-        model.add(Dense(512))
+        model.add(Conv2D(32, kernel_size=3, padding='same', strides=2,input_shape=self.img_shape))
         model.add(LeakyReLU(alpha=0.2))
-        model.add(Dense(256))
+        model.add(Dropout(0.2))
+        model.add(Conv2D(64, kernel_size=3, padding='same', strides=2))
+        model.add(ZeroPadding2D(padding=((0, 1), (1, 0))))
+        model.add(BatchNormalization(momentum=0.8))
         model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.2))
+        model.add(Conv2D(128, kernel_size=3, padding='same', strides=2))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.2))
+        model.add(Conv2D(265, kernel_size=3, padding='same', strides=2))
+        model.add(BatchNormalization(momentum=0.8))
+        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dropout(0.2))
+        model.add(Flatten())
         model.add(Dense(1, activation='sigmoid'))
 
         model.summary()
@@ -142,5 +156,5 @@ class VGAN():
 
 
 if __name__ == "__main__":
-    vgan = VGAN()
-    vgan.train(epochs=50000, batch_size=32, sample_size=200)
+    dcgan = DCGAN()
+    dcgan.train(epochs=5000, batch_size=32, sample_size=100)
